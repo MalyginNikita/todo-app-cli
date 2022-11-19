@@ -1,28 +1,56 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+    <div id="app">
+        <Header :add-task="addTask"></Header>
+        <router-view
+            :do-check="doCheck"
+            :remove-mask="removeMask"
+            :need-do-list="needDoList"
+            :complete-list="completeList"
+        ></router-view>
+    </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import ToDoList from './components/ToDoList.vue';
+import Header from './components/Header.vue';
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+    name: 'App',
+    components: {
+        ToDoList,
+        Header,
+    },
+    data() {
+        return {
+            needDoList: [],
+            completeList: [],
+        };
+    },
+    methods: {
+        doCheck(index, type) {
+            if (type === 'need') {
+                const completeMask = this.needDoList.splice(index, 1);
+                this.completeList.push(...completeMask);
+            } else {
+                const noCompleteMask = this.completeList.splice(index, 1);
+                this.needDoList.push(...noCompleteMask);
+            }
+        },
+        removeMask(index, type) {
+            const toDoList =
+                type === 'need' ? this.needDoList : this.completeList;
+            toDoList.splice(index, 1);
+        },
+        addTask(value) {
+            if (value === '') {
+                return;
+            }
+            this.needDoList.push({
+                title: value,
+                id: Date.now().toString(),
+            });
+            //this.value = '';
+        },
+    },
+};
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
